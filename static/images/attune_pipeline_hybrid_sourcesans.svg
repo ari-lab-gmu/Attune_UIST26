@@ -1,0 +1,155 @@
+<svg viewBox="0 0 1180 552" xmlns="http://www.w3.org/2000/svg" font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif">
+  <defs>
+    <marker id="fa" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#55606B"/>
+    </marker>
+    <marker id="fg" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3F7A57"/>
+    </marker>
+    <marker id="fl" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9AA0A6"/>
+    </marker>
+  </defs>
+
+  <!-- ===== DETAILED LANE BACKGROUNDS ===== -->
+  <rect x="296" y="54" width="706" height="192" rx="12" fill="#F1F6F2" stroke="#D8E4DB" stroke-width="1"/>
+  <rect x="296" y="312" width="706" height="196" rx="12" fill="#F2F1F7" stroke="#DEDAE8" stroke-width="1"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="306" y="74" font-size="13" font-weight="700" fill="#2E6A47">PHASE 3 · Pattern Inference</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="516" y="74" font-size="10" font-style="italic" fill="#6B6B6B">runs once per participant</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="306" y="332" font-size="13" font-weight="700" fill="#54468A">PHASE 4 · Pattern-Guided Auto-Annotation</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="612" y="332" font-size="10" font-style="italic" fill="#6B6B6B">high-throughput, per shift</text>
+
+  <!-- ================= COMPACT PHASE 1 ================= -->
+  <rect x="16" y="96" width="118" height="96" rx="9" fill="#EAF0F5" stroke="#5B7A99" stroke-width="1.4"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="26" y="116" font-size="8.5" font-weight="700" letter-spacing="1" fill="#3E607F">PHASE 1</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="26" y="132" font-size="11.5" font-weight="700" fill="#22303A">Sensemaking</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="26" y="149" font-size="8.3" fill="#6B6B6B">6 feeds · eye tracker</text>
+  <line x1="26" y1="158" x2="124" y2="158" stroke="#C4D3DF" stroke-width="1"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="26" y="180" font-size="8.7" font-weight="700" fill="#3E607F">▸ gaze + robot</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="26" y="190" font-size="8.7" font-weight="700" fill="#3E607F">   context</text>
+
+  <!-- ================= COMPACT PHASE 2 ================= -->
+  <rect x="150" y="96" width="132" height="96" rx="9" fill="#E7F1EF" stroke="#4E8479" stroke-width="1.4"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="160" y="116" font-size="8.5" font-weight="700" letter-spacing="1" fill="#37665C">PHASE 2</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="160" y="132" font-size="11.5" font-weight="700" fill="#22303A">Gaze-Shift Annot.</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="160" y="149" font-size="8.3" fill="#6B6B6B">operator explains shifts</text>
+  <line x1="160" y1="158" x2="272" y2="158" stroke="#BFDDD6" stroke-width="1"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="160" y="180" font-size="8.7" font-weight="700" fill="#37665C">▸ annotated gaze</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="160" y="190" font-size="8.7" font-weight="700" fill="#37665C">   shifts</text>
+
+  <!-- Phase1 -> Phase2 -->
+  <line x1="135" y1="144" x2="149" y2="144" stroke="#55606B" stroke-width="1.5" marker-end="url(#fa)"/>
+  <!-- Phase2 -> Phase3 serialize -->
+  <line x1="283" y1="144" x2="311" y2="142" stroke="#55606B" stroke-width="1.5" marker-end="url(#fa)"/>
+
+  <!-- Phase1 -> Phase4 context (feeds multi-source) -->
+  <polyline points="75,193 75,425 148,425" fill="none" stroke="#9AA0A6" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#fl)"/>
+
+  <!-- ===== MULTI-SOURCE CONTEXT (from Phase 1) ===== -->
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="150" y="344" font-size="8.5" font-weight="700" fill="#54468A">Multi-source context</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="150" y="354" font-size="7.8" font-style="italic" fill="#9AA0A6">captured in Phase 1</text>
+  <rect x="150" y="360" width="140" height="40" rx="6" fill="#EAF0F5" stroke="#5B7A99" stroke-width="1.2"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="220" y="376" font-size="8.6" font-weight="600" fill="#22303A" text-anchor="middle">Robot activity hierarchy</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="220" y="388" font-size="7.6" fill="#6B6B6B" text-anchor="middle">Goal·Subgoal·Action·Motion·State</text>
+  <rect x="150" y="405" width="140" height="34" rx="6" fill="#EAF0F5" stroke="#5B7A99" stroke-width="1.2"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="220" y="420" font-size="8.6" font-weight="600" fill="#22303A" text-anchor="middle">YOLO visual cues</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="220" y="431" font-size="7.6" fill="#6B6B6B" text-anchor="middle">object labels · masked regions</text>
+  <rect x="150" y="444" width="140" height="34" rx="6" fill="#EAF0F5" stroke="#5B7A99" stroke-width="1.2"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="220" y="459" font-size="8.6" font-weight="600" fill="#22303A" text-anchor="middle">Gaze timing · shift ctx</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="220" y="470" font-size="7.6" fill="#6B6B6B" text-anchor="middle">dwell · from/to view · pre/post</text>
+  <!-- merge into serialize -->
+  <line x1="290" y1="425" x2="311" y2="425" stroke="#55606B" stroke-width="1.5" marker-end="url(#fa)"/>
+
+  <!-- ================= PHASE 3 DETAIL ================= -->
+  <!-- serialize -->
+  <rect x="312" y="102" width="150" height="76" rx="8" fill="#FBEEDD" stroke="#C77D3A" stroke-width="2"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="387" y="132" font-size="10.5" font-weight="700" fill="#22303A" text-anchor="middle">Serialize → payload</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="387" y="148" font-size="8.6" fill="#6B6B6B" text-anchor="middle">semantic + context fields</text>
+  <!-- gemini -->
+  <rect x="484" y="94" width="160" height="92" rx="8" fill="#DCEBE1" stroke="#3F7A57" stroke-width="1.6"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="564" y="120" font-size="11" font-weight="700" fill="#22303A" text-anchor="middle">Gemini-2.5-Flash</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="564" y="136" font-size="9" fill="#22303A" text-anchor="middle">zero-shot clustering</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="564" y="152" font-size="8.4" fill="#3F5F4B" text-anchor="middle">by why-leave / why-arrive</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="564" y="164" font-size="8.4" fill="#3F5F4B" text-anchor="middle">similarity</text>
+  <!-- candidate + review -->
+  <rect x="666" y="102" width="158" height="76" rx="8" fill="#F5F5F2" stroke="#9A9A90" stroke-width="1.3"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="745" y="122" font-size="10.5" font-weight="700" fill="#22303A" text-anchor="middle">Candidate patterns</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="745" y="136" font-size="8.3" fill="#6B6B6B" text-anchor="middle">scope · evidence · conf.</text>
+  <circle cx="678" cy="160" r="3" fill="#555"/><path d="M673,170 a5,5 0 0 1 10,0" fill="#555"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="690" y="166" font-size="8.5" font-style="italic" fill="#444">→ operator review &amp; refine</text>
+  <!-- pattern library cylinder -->
+  <path d="M846,116 L846,164 A75,10 0 0 0 996,164 L996,116 Z" fill="#DCEBE1" stroke="#3F7A57" stroke-width="1.5"/>
+  <ellipse cx="921" cy="116" rx="75" ry="10" fill="#EAF5EE" stroke="#3F7A57" stroke-width="1.5"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="921" y="138" font-size="10" font-weight="700" fill="#22303A" text-anchor="middle">Reviewed</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="921" y="152" font-size="10" font-weight="700" fill="#22303A" text-anchor="middle">pattern library</text>
+  <!-- arrows -->
+  <line x1="463" y1="140" x2="482" y2="140" stroke="#55606B" stroke-width="1.5" marker-end="url(#fa)"/>
+  <line x1="645" y1="140" x2="664" y2="140" stroke="#55606B" stroke-width="1.5" marker-end="url(#fa)"/>
+  <line x1="825" y1="140" x2="844" y2="140" stroke="#55606B" stroke-width="1.5" marker-end="url(#fa)"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="564" y="212" font-size="8.8" font-style="italic" fill="#3F7A57" text-anchor="middle">runs once per participant · favors stronger semantic reasoning</text>
+
+  <!-- ===== CROSS-PHASE CONNECTOR ===== -->
+  <polyline points="921,174 921,288 393,288 393,370" fill="none" stroke="#3F7A57" stroke-width="1.6" marker-end="url(#fg)"/>
+  <rect x="500" y="276" width="292" height="16" rx="3" fill="#FFFFFF"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="646" y="288" font-size="9.3" font-style="italic" fill="#2E6A47" text-anchor="middle">reviewed patterns condition the Phase 4 prompt</text>
+
+  <!-- ================= PHASE 4 DETAIL ================= -->
+  <!-- serialize per-shift prompt (BIG highlight) -->
+  <rect x="312" y="372" width="162" height="108" rx="8" fill="#FBEEDD" stroke="#C77D3A" stroke-width="2.4"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="393" y="391" font-size="10.5" font-weight="700" fill="#22303A" text-anchor="middle">Serialize → per-shift prompt</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="322" y="408" font-size="8.5" fill="#22303A">local shift context</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="322" y="421" font-size="8.5" fill="#22303A">+ pre / post robot state</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="322" y="434" font-size="8.5" fill="#22303A">+ YOLO visual cues</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="322" y="447" font-size="8.5" fill="#22303A">+ gaze timing features</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="322" y="460" font-size="8.5" fill="#8A5A22" font-weight="600">+ reviewed pattern library</text>
+  <!-- llama -->
+  <rect x="496" y="390" width="160" height="76" rx="8" fill="#E4DFF0" stroke="#5D4E8C" stroke-width="1.6"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="576" y="414" font-size="11" font-weight="700" fill="#22303A" text-anchor="middle">Llama-3.3-70B</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="576" y="428" font-size="10" font-weight="700" fill="#22303A" text-anchor="middle">Versatile</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="576" y="444" font-size="8.6" fill="#4A3E70" text-anchor="middle">suggestion generation</text>
+  <!-- candidate annotations + review -->
+  <rect x="678" y="376" width="160" height="100" rx="8" fill="#F5F5F2" stroke="#9A9A90" stroke-width="1.3"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="758" y="396" font-size="10.3" font-weight="700" fill="#22303A" text-anchor="middle">Candidate annotations</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="758" y="411" font-size="8.3" fill="#22303A" text-anchor="middle">shift type · why leave</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="758" y="422" font-size="8.3" fill="#22303A" text-anchor="middle">· why arrive</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="758" y="435" font-size="7.9" fill="#6B6B6B" text-anchor="middle">each + confidence + expl.</text>
+  <circle cx="690" cy="458" r="3" fill="#555"/><path d="M685,468 a5,5 0 0 1 10,0" fill="#555"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="702" y="464" font-size="8.2" font-style="italic" fill="#444">→ accept / revise / discard</text>
+  <!-- final -->
+  <rect x="860" y="392" width="138" height="68" rx="8" fill="#EFEFEA" stroke="#8A8A82" stroke-width="1.3"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="929" y="422" font-size="10.5" font-weight="700" fill="#22303A" text-anchor="middle">Final</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="929" y="436" font-size="10.5" font-weight="700" fill="#22303A" text-anchor="middle">annotations</text>
+  <!-- arrows -->
+  <line x1="475" y1="426" x2="494" y2="426" stroke="#55606B" stroke-width="1.5" marker-end="url(#fa)"/>
+  <line x1="657" y1="426" x2="676" y2="426" stroke="#55606B" stroke-width="1.5" marker-end="url(#fa)"/>
+  <line x1="839" y1="426" x2="858" y2="426" stroke="#55606B" stroke-width="1.5" marker-end="url(#fa)"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="576" y="486" font-size="8.8" font-style="italic" fill="#5D4E8C" text-anchor="middle">high-throughput per-shift · favors low latency + cost</text>
+
+  <!-- ================= COMPACT PHASE 5 ================= -->
+  <rect x="1016" y="348" width="150" height="156" rx="9" fill="#FBF0DE" stroke="#C79A2E" stroke-width="1.4"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="1026" y="368" font-size="8.5" font-weight="700" letter-spacing="1" fill="#9A7517">PHASE 5</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="1026" y="384" font-size="11" font-weight="700" fill="#22303A">Summary &amp;</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="1026" y="398" font-size="11" font-weight="700" fill="#22303A">Reflection</text>
+  <line x1="1026" y1="406" x2="1156" y2="406" stroke="#E7D6A9" stroke-width="1"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="1026" y="421" font-size="8" fill="#22303A">• annotation style</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="1026" y="433" font-size="8" fill="#22303A">• attention profile</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="1026" y="445" font-size="8" fill="#22303A">• pattern use in Phase 4</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="1026" y="457" font-size="8" fill="#22303A">• auto-annotation reflection</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="1026" y="472" font-size="7.4" font-style="italic" fill="#9AA0A6">+ pattern library &amp; history</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="1026" y="490" font-size="9" font-weight="700" fill="#9A7517">▸ operator attention</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="1026" y="500" font-size="9" font-weight="700" fill="#9A7517">   profile</text>
+  <!-- final -> phase5 -->
+  <line x1="999" y1="426" x2="1015" y2="426" stroke="#55606B" stroke-width="1.5" marker-end="url(#fa)"/>
+
+  <!-- ================= LEGEND ================= -->
+  <rect x="16" y="520" width="13" height="13" rx="2" fill="#FBEEDD" stroke="#C77D3A" stroke-width="1.6"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="34" y="530" font-size="8.6" fill="#22303A">Prompt assembly</text>
+  <rect x="150" y="520" width="13" height="13" rx="2" fill="#DCEBE1" stroke="#3F7A57" stroke-width="1.2"/>
+  <rect x="166" y="520" width="13" height="13" rx="2" fill="#E4DFF0" stroke="#5D4E8C" stroke-width="1.2"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="185" y="530" font-size="8.6" fill="#22303A">LLM stage (Gemini · Llama)</text>
+  <circle cx="366" cy="527" r="3" fill="#555"/><path d="M361,536 a5,5 0 0 1 10,0" fill="#555"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="378" y="530" font-size="8.6" fill="#22303A">operator-in-the-loop</text>
+  <rect x="512" y="520" width="13" height="13" rx="2" fill="#EAF0F5" stroke="#5B7A99" stroke-width="1.2"/>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="530" y="530" font-size="8.6" fill="#22303A">data / context</text>
+  <text font-family="'Source Sans 3', 'Source Sans Pro', 'Source Sans', sans-serif" x="640" y="530" font-size="8.6" font-weight="700" fill="#22303A">▸ phase output</text>
+</svg>
