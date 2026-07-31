@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <a href="https://puqi7.github.io/Attune_SelfAnnotation/](https://ari-lab-gmu.github.io/Attune_UIST26/)">🌐 Project Page</a> |
+  <a href="ari-lab-gmu.github.io/Attune_UIST26/">🌐 Project Page</a> |
   <a href="#">📄 Paper (Coming...)</a> |
   <a href="https://github.com/Puqi7/Attune_SelfAnnotation/tree/main/prompts">💬 Prompts</a>
 </p>
