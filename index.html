@@ -3,225 +3,353 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="title" content="Attune Self-Annotation">
-  <meta name="description" content="Attune Self-Annotation is a gaze-aware workflow for replaying, reviewing, and annotating attention during multi-robot video supervision.">
-  <meta name="keywords" content="HCI, gaze, annotation, robotics, video analysis, human-AI interaction">
-  <meta name="author" content="Puqi Zhou">
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="Attune: A Self-Annotation Tool for Understanding Robot Operator Attention Profiles">
+  <meta name="description" content="Attune is a pre-deployment elicitation tool that identifies meaningful gaze shifts, assists annotation of why shifts occurred, and summarizes operator gaze patterns to characterize attention profiles in multi-robot supervision.">
+  <meta name="keywords" content="HCI, gaze, annotation, robotics, multi-robot supervision, attention profiles, UIST">
+  <meta name="author" content="Puqi Zhou, Sungsoo Ray Hong, David Porfirio">
   <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+
+  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="George Mason University">
-  <meta property="og:title" content="Attune Self-Annotation">
-  <meta property="og:description" content="A gaze-aware self-annotation workflow for understanding attention in multi-robot video supervision.">
+  <meta property="og:title" content="Attune: A Self-Annotation Tool for Understanding Robot Operator Attention Profiles">
+  <meta property="og:description" content="A self-annotation tool for understanding robot operator attention profiles. ACM UIST 2026.">
   <meta property="og:url" content="https://puqi7.github.io/Attune_SelfAnnotation/">
-  <meta property="og:image" content="https://puqi7.github.io/Attune_SelfAnnotation/static/images/attune_pipeline_hybrid_sourcesans.svg">
+  <meta property="og:image" content="https://puqi7.github.io/Attune_SelfAnnotation/static/images/attune_pipeline.png">
+  <meta property="og:image:alt" content="Attune - Research Preview">
+  <meta property="article:published_time" content="2026-01-01T00:00:00.000Z">
+  <meta property="article:author" content="Puqi Zhou">
+  <meta property="article:section" content="Research">
+  <meta property="article:tag" content="HCI">
+  <meta property="article:tag" content="Robotics">
+  <meta property="article:tag" content="Gaze">
+
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Attune Self-Annotation">
-  <meta name="twitter:description" content="A gaze-aware self-annotation workflow for replaying, reviewing, and annotating attention in multi-robot video supervision.">
-  <meta name="theme-color" content="#1d4ed8">
-  <title>Attune Self-Annotation</title>
+  <meta name="twitter:title" content="Attune: A Self-Annotation Tool for Understanding Robot Operator Attention Profiles">
+  <meta name="twitter:description" content="A self-annotation tool for understanding robot operator attention profiles. ACM UIST 2026.">
+  <meta name="twitter:image" content="https://puqi7.github.io/Attune_SelfAnnotation/static/images/attune_pipeline.png">
+  <meta name="twitter:image:alt" content="Attune - Research Preview">
+
+  <!-- Academic/Research Specific -->
+  <meta name="citation_title" content="Attune: A Self-Annotation Tool for Understanding Robot Operator Attention Profiles">
+  <meta name="citation_author" content="Zhou, Puqi">
+  <meta name="citation_author" content="Hong, Sungsoo Ray">
+  <meta name="citation_author" content="Porfirio, David">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_conference_title" content="The 39th Annual ACM Symposium on User Interface Software and Technology">
+  <meta name="citation_pdf_url" content="https://puqi7.github.io/Attune_SelfAnnotation/static/pdfs/paper.pdf">
+
+  <!-- Additional SEO -->
+  <meta name="theme-color" content="#2563eb">
+  <meta name="msapplication-TileColor" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <!-- Preconnect for performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://ajax.googleapis.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+  <title>Attune: A Self-Annotation Tool for Understanding Robot Operator Attention Profiles</title>
+
+  <!-- Critical CSS - Load synchronously -->
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <!-- Non-critical CSS - Load asynchronously -->
+  <link rel="preload" href="static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/bulma-slider.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+  <noscript>
+    <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  </noscript>
+
+  <!-- Fonts - Optimized loading -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/styles.css">
+
+  <!-- Defer non-critical JavaScript -->
+  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/bulma-carousel.min.js"></script>
+  <script defer src="static/js/bulma-slider.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+
+  <!-- Structured Data for Academic Papers -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "Attune: A Self-Annotation Tool for Understanding Robot Operator Attention Profiles",
+    "description": "A self-annotation tool for understanding robot operator attention profiles during multi-robot supervision.",
+    "author": [
+      {
+        "@type": "Person",
+        "name": "Puqi Zhou",
+        "affiliation": {
+          "@type": "Organization",
+          "name": "George Mason University"
+        }
+      },
+      {
+        "@type": "Person",
+        "name": "Sungsoo Ray Hong",
+        "affiliation": {
+          "@type": "Organization",
+          "name": "George Mason University"
+        }
+      },
+      {
+        "@type": "Person",
+        "name": "David Porfirio",
+        "affiliation": {
+          "@type": "Organization",
+          "name": "George Mason University"
+        }
+      }
+    ],
+    "datePublished": "2026-11-02",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Association for Computing Machinery"
+    },
+    "url": "https://puqi7.github.io/Attune_SelfAnnotation/",
+    "keywords": ["HCI", "gaze", "multi-robot supervision", "attention profiles", "annotation"],
+    "abstract": "Deploying robot fleets in complex, real-world environments requires human operators to supervise multiple robots simultaneously. Managing operator attention is a fundamental challenge of designing multi-robot supervision interfaces, encompassing both feed layout and feed content (i.e., robot behavior design). Thus far, the designers of these interfaces lack empirical guidance on the latter—how to change a robot’s behavior to capture, sustain, or relinquish operator attention during multi-robot supervision. In our vision of the future, designers should be able to use this guidance to calibrate robot behavior to different operator attention profiles. Based on the insight that operator eye gaze can serve as a robot behavior design clue, we created a pre-deployment elicitation tool called Attune. Attune automatically identifies when meaningful gaze shifts occur, provides AI-assistance for annotating why shifts occurred, and outputs a summary of operator gaze patterns for operator review. We evaluated Attune through a user study in which participants annotated the visual triggers that drew their attention. Our findings unveil variation in individual attention profiles and reveal how Attune helps characterize operator attention.",
+    "isAccessibleForFree": true,
+    "license": "https://creativecommons.org/licenses/by/4.0/"
+  }
+  </script>
 </head>
 <body>
-  <button class="scroll-to-top" type="button" aria-label="Scroll to top" title="Scroll to top">Up</button>
 
-  <header class="site-header">
-    <nav class="nav" aria-label="Main navigation">
-      <a class="brand" href="#top" aria-label="Attune Self-Annotation home">Attune</a>
-      <div class="nav-links">
-        <a href="#abstract">Abstract</a>
-        <a href="#workflow">Workflow</a>
-        <a href="#system">System</a>
-        <a href="#resources">Resources</a>
-        <a href="#bibtex">BibTeX</a>
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <!-- More Works Dropdown -->
+  <div class="more-works-container">
+    <button class="more-works-btn" onclick="toggleMoreWorks()" title="View More Works from Our Lab">
+      <i class="fas fa-flask"></i>
+      More Works
+      <i class="fas fa-chevron-down dropdown-arrow"></i>
+    </button>
+    <div class="more-works-dropdown" id="moreWorksDropdown">
+      <div class="dropdown-header">
+        <h4>More Works from Our Lab</h4>
+        <button class="close-btn" onclick="toggleMoreWorks()">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
-    </nav>
-  </header>
+      <div class="works-list">
+        <a href="https://puqi7.github.io/MRVS_VideoSensemaking/" class="work-item" target="_blank">
+          <div class="work-info">
+            <h5>Designing Multi-Robot Ground Video Sensemaking with Public Safety Professionals</h5>
+            <p>MRVS integrates multi-robot patrol videos with EoI-driven event summaries for public safety workflows.</p>
+            <span class="work-venue">ACM CHI 2026</span>
+          </div>
+          <i class="fas fa-external-link-alt"></i>
+        </a>
+      </div>
+    </div>
+  </div>
 
-  <main id="top">
-    <section class="hero">
-      <div class="hero-inner">
-        <p class="venue">Project Page | Self-Annotation and Gaze-Aware Robot Video Review</p>
-        <h1>Attune Self-Annotation</h1>
-        <p class="subtitle">
-          A gaze-aware workflow for replaying, reviewing, and annotating human attention during multi-robot video supervision.
-        </p>
+  <main id="main-content">
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">Attune: A Self-Annotation Tool for Understanding Robot Operator Attention Profiles</h1>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">
+                <a href="https://puqi7.github.io/" target="_blank">Puqi Zhou</a><sup>1</sup>,</span>
+              <span class="author-block">
+                <a href="http://www.rayhong.net/?i=2" target="_blank">Sungsoo Ray Hong</a><sup>1</sup>,</span>
+              <span class="author-block">
+                <a href="https://dporfirio.github.io/" target="_blank">David Porfirio</a><sup>1</sup>
+              </span>
+            </div>
 
-        <div class="authors" aria-label="Authors and affiliations">
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">
+                <sup>1</sup>George Mason University, Fairfax, VA, USA
+                <br>
+                ACM UIST 2026
+              </span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="#"
+                  class="external-link button is-normal is-rounded is-dark"
+                  onclick="return false;"
+                  aria-disabled="true"
+                  title="Paper coming soon">
+                  <span class="icon">
+                    <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper (Coming...)</span>
+                  </a>
+                </span>
+
+                <span class="link-block">
+                  <a href="https://doi.org/10.1145/3830398.3830514" target="_blank"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-link"></i>
+                  </span>
+                  <span>DOI</span>
+                  </a>
+                </span>
+
+                <span class="link-block">
+                  <a href="https://github.com/Puqi7/Attune_SelfAnnotation" target="_blank"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+                </span>
+
+                <span class="link-block">
+                  <a href="prompts/"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-terminal"></i>
+                  </span>
+                  <span>Prompts</span>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
           <p>
-            <a href="https://puqi7.github.io/" target="_blank" rel="noreferrer">Puqi Zhou</a>
-            <span class="muted">and collaborators</span>
+            Deploying robot fleets in complex, real-world environments requires human operators to supervise multiple robots simultaneously. Managing operator attention is a fundamental challenge of designing multi-robot supervision interfaces, encompassing both feed layout and feed content (i.e., robot behavior design). Thus far, the designers of these interfaces lack empirical guidance on the latter—how to change a robot’s behavior to capture, sustain, or relinquish operator attention during multi-robot supervision. In our vision of the future, designers should be able to use this guidance to calibrate robot behavior to different operator attention profiles. Based on the insight that operator eye gaze can serve as a robot behavior design clue, we created a pre-deployment elicitation tool called Attune. Attune automatically identifies when meaningful gaze shifts occur, provides AI-assistance for annotating why shifts occurred, and outputs a summary of operator gaze patterns for operator review. We evaluated Attune through a user study in which participants annotated the visual triggers that drew their attention. Our findings unveil variation in individual attention profiles and reveal how Attune helps characterize operator attention.
           </p>
-          <p class="muted">George Mason University | Update venue and author list before publication</p>
-        </div>
-
-        <div class="button-row" aria-label="Project links">
-          <a class="button primary" href="static/pdfs/paper.pdf">Paper</a>
-          <a class="button" href="supplemental/">Supplemental</a>
-          <a class="button" href="https://github.com/Puqi7/Attune_SelfAnnotation" target="_blank" rel="noreferrer">Code</a>
-          <a class="button" href="#bibtex">Citation</a>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
 
-    <section class="visual-band" aria-label="Project pipeline preview">
-      <div class="container">
-        <figure class="figure-frame">
-          <img src="static/images/attune_pipeline_hybrid_sourcesans.svg" alt="Attune project pipeline overview">
-          <figcaption>
-            Initial pipeline figure copied from the local Attune materials. Replace or refine this image as the final project narrative settles.
-          </figcaption>
-        </figure>
-      </div>
-    </section>
 
-    <section class="section" id="abstract">
-      <div class="container narrow">
-        <h2>Abstract</h2>
-        <p>
-          Understanding where people allocate attention while supervising robots is difficult when the evidence is split across synchronized video, robot behavior logs, and eye-tracking data. Attune Self-Annotation supports a workflow in which participants can replay multi-camera robot activity, inspect gaze traces, and annotate attention shifts in context. The project is designed to help researchers connect robot motion, task events, gaze behavior, and participant interpretation during indoor robot supervision.
-        </p>
-        <p>
-          This page is a publication-ready scaffold. Update this abstract with the final paper abstract, results, and claims before public release.
-        </p>
-      </div>
-    </section>
-
-    <section class="section soft" id="workflow">
-      <div class="container">
-        <h2>Workflow</h2>
-        <div class="steps">
-          <article>
-            <span class="step-number">1</span>
-            <h3>Synchronize</h3>
-            <p>Align robot camera streams, robot motion events, participant gaze, and session timeline data.</p>
-          </article>
-          <article>
-            <span class="step-number">2</span>
-            <h3>Replay</h3>
-            <p>Review synchronized videos with gaze overlays and timeline controls for precise sensemaking.</p>
-          </article>
-          <article>
-            <span class="step-number">3</span>
-            <h3>Annotate</h3>
-            <p>Mark attention shifts, robot-focused gaze events, contextual notes, and behavior-level labels.</p>
-          </article>
-          <article>
-            <span class="step-number">4</span>
-            <h3>Analyze</h3>
-            <p>Export structured annotations for descriptive analysis and gaze prediction models.</p>
-          </article>
+<!-- Teaser / pipeline figure -->
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <img src="static/images/attune_pipeline.png" alt="Attune pipeline" loading="lazy"/>
+          <h2 class="subtitle has-text-centered">
+            Attune pipeline: from multi-robot supervision and gaze shifts to annotation, pattern analysis, and summary.
+          </h2>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
+<!-- End teaser -->
 
-    <section class="section" id="system">
-      <div class="container split">
-        <div>
-          <h2>System Overview</h2>
-          <p>
-            The system combines an indoor map, synchronized robot camera views, gaze recording or replay, and annotation controls. The frontend can be driven by structured robot/camera configuration, while the optional backend records and serves Tobii gaze data for replay.
+
+<!-- Video presentation -->
+<section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h2 class="title is-3">Video Presentation</h2>
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <div class="publication-video">
+            <iframe
+              src="https://www.youtube.com/embed/RyErvwdu2Io"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              loading="lazy"
+              title="Attune Video Presentation">
+            </iframe>
+          </div>
+          <p class="teaser-description video-presentation-caption">
+            Attune demonstration video embedded from
+            <a href="https://youtu.be/RyErvwdu2Io" target="_blank" rel="noreferrer">YouTube</a>.
           </p>
-          <ul class="check-list">
-            <li>Multi-robot, multi-camera synchronized playback</li>
-            <li>Indoor map and trajectory context</li>
-            <li>Consent-aware gaze recording workflow</li>
-            <li>Replayable gaze overlays for retrospective annotation</li>
-          </ul>
-        </div>
-        <div class="info-panel">
-          <h3>Current Local Sources</h3>
-          <dl>
-            <div>
-              <dt>Prototype</dt>
-              <dd><code>Attention1_annnotation/</code></dd>
-            </div>
-            <div>
-              <dt>Analysis</dt>
-              <dd><code>attune_v1/</code></dd>
-            </div>
-            <div>
-              <dt>Figure</dt>
-              <dd><code>attune_pipeline_hybrid_sourcesans.svg</code></dd>
-            </div>
-          </dl>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
+<!-- End video presentation -->
 
-    <section class="section soft" id="findings">
-      <div class="container">
-        <h2>Research Components</h2>
-        <div class="grid">
-          <article>
-            <h3>Self-Annotation Interface</h3>
-            <p>Participant-facing replay and annotation views for connecting attention to robot activity.</p>
-          </article>
-          <article>
-            <h3>Gaze Event Analysis</h3>
-            <p>Temporal aggregation of gaze targets, attention shifts, and robot-related motion features.</p>
-          </article>
-          <article>
-            <h3>Prediction Models</h3>
-            <p>Baseline and event-level models for estimating gaze target from robot motion features.</p>
-          </article>
-        </div>
+
+<!-- BibTeX citation -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <div class="bibtex-header">
+        <h2 class="title">BibTeX</h2>
+        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
+          <i class="fas fa-copy"></i>
+          <span class="copy-text">Copy</span>
+        </button>
       </div>
-    </section>
-
-    <section class="section" id="resources">
-      <div class="container">
-        <h2>Resources</h2>
-        <div class="resource-list">
-          <a href="static/pdfs/paper.pdf">
-            <strong>Paper</strong>
-            <span>Add the camera-ready PDF at <code>static/pdfs/paper.pdf</code>.</span>
-          </a>
-          <a href="static/videos/demo.mp4">
-            <strong>Demo Video</strong>
-            <span>Add a project demo at <code>static/videos/demo.mp4</code>.</span>
-          </a>
-          <a href="supplemental/">
-            <strong>Supplemental</strong>
-            <span>Use the supplemental folder for protocol, instruments, or appendices.</span>
-          </a>
-          <a href="https://github.com/Puqi7/Attune_SelfAnnotation" target="_blank" rel="noreferrer">
-            <strong>Repository</strong>
-            <span>Connect this link after creating the GitHub repository.</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section class="section bibtex-section" id="bibtex">
-      <div class="container narrow">
-        <div class="section-title-row">
-          <h2>BibTeX</h2>
-          <button class="copy-button" type="button" data-copy-target="bibtex-code">Copy</button>
-        </div>
-        <pre id="bibtex-code"><code>@misc{zhou2026attune,
-  author = {Zhou, Puqi},
-  title = {Attune Self-Annotation},
+      <pre id="bibtex-code"><code>@inproceedings{zhou2026attune,
+  author = {Zhou, Puqi and Hong, Sungsoo Ray and Porfirio, David},
+  title = {Attune: A Self-Annotation Tool for Understanding Robot Operator Attention Profiles},
   year = {2026},
-  note = {Project page scaffold},
-  url = {https://puqi7.github.io/Attune_SelfAnnotation/}
+  isbn = {979-8-4007-2856-3/2026/11},
+  booktitle = {The 39th Annual ACM Symposium on User Interface Software and Technology (UIST '26)},
+  location = {Detroit, MI, USA},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  doi = {10.1145/3830398.3830514},
+  url = {https://doi.org/10.1145/3830398.3830514}
 }</code></pre>
-      </div>
-    </section>
-  </main>
+    </div>
+</section>
+<!-- End BibTeX citation -->
+
 
   <footer class="footer">
-    <div class="container narrow">
-      <p>
-        This project page follows the academic project-page structure used by
-        <a href="https://github.com/Puqi7/MRVS_VideoSensemaking" target="_blank" rel="noreferrer">MRVS VideoSensemaking</a>
-        and the Academic Project Page Template.
-      </p>
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a> which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+            You are free to borrow the source code of this website, we just ask that you link back to this page in the footer. <br> This website is licensed under a <a rel="license"  href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
     </div>
-  </footer>
+  </div>
+</footer>
 
-  <script src="static/js/main.js"></script>
-</body>
-</html>
+  </main>
+  </body>
+  </html>

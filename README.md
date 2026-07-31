@@ -1,62 +1,31 @@
 <!-- ================================ -->
-<!-- Attune Self-Annotation README     -->
+<!-- Attune Project Page README      -->
 <!-- ================================ -->
 
 <h1 align="center">
-  Attune Self-Annotation
+  Attune: A Self-Annotation Tool for Understanding Robot Operator Attention Profiles
 </h1>
 
 <p align="center">
-  <b>A gaze-aware self-annotation workflow for understanding attention in multi-robot video supervision</b>
+  <b>ACM UIST 2026</b>
   <br/>
-  <i>Project page scaffold</i>
+  Puqi Zhou, Sungsoo Ray Hong, David Porfirio
+  <br/>
+  George Mason University
 </p>
 
 <p align="center">
   <a href="https://puqi7.github.io/Attune_SelfAnnotation/">Project Page</a> |
   <a href="static/pdfs/paper.pdf">Paper</a> |
-  <a href="supplemental/">Supplemental</a>
+  <a href="prompts/">Prompts</a>
 </p>
 
 <hr/>
 
-Attune Self-Annotation is a project page and repository scaffold for presenting
-research on gaze recording, replay, and self-annotation around multi-camera
-robot video analysis. The page follows the same static GitHub Pages style as
-`Puqi7/MRVS_VideoSensemaking`, with sections for the abstract, workflow, system
-overview, data/model artifacts, citation, and acknowledgments.
-
-## Repository Structure
-
-```text
-Attune_SelfAnnotation/
-|-- index.html
-|-- README.md
-|-- .nojekyll
-|-- supplemental/
-`-- static/
-    |-- css/
-    |   `-- styles.css
-    |-- images/
-    |   `-- attune_pipeline_hybrid_sourcesans.svg
-    |-- js/
-    |   `-- main.js
-    |-- pdfs/
-    `-- videos/
-```
-
-## Edit Checklist
-
-- Replace the provisional title/subtitle if the paper title changes.
-- Update authors, affiliations, publication venue, and project links in
-  `index.html`.
-- Put the paper PDF in `static/pdfs/paper.pdf`.
-- Add demo videos to `static/videos/` and update the video section.
-- Replace the BibTeX block once the citation is final.
+Project page for Attune, built from the same Academic Project Page Template used by
+[`MRVS_VideoSensemaking`](https://puqi7.github.io/MRVS_VideoSensemaking/).
 
 ## Local Preview
-
-Open `index.html` directly in a browser, or run:
 
 ```bash
 python3 -m http.server 8000
@@ -64,23 +33,15 @@ python3 -m http.server 8000
 
 Then visit `http://localhost:8000`.
 
+## Edit Checklist
+
+- Put the camera-ready PDF at `static/pdfs/paper.pdf`
+- Add a demo video at `static/videos/demo.mp4`
+- Replace or refine `static/images/attune_pipeline_hybrid_sourcesans.svg`
+- Update author homepage links if needed
+
 ## GitHub Pages
 
-After pushing this repository to GitHub:
-
-1. Go to `Settings` -> `Pages`.
-2. Set source to `Deploy from a branch`.
-3. Select the default branch and `/root`.
-4. The project page should publish at:
-   `https://puqi7.github.io/Attune_SelfAnnotation/`.
-
-## Acknowledgments
-
-This scaffold follows the academic project page pattern used by
-`Puqi7/MRVS_VideoSensemaking`, which was generated from the Academic Project
-Page Template and inspired by the Nerfies project page.
-
-## Website License
-
-This project page scaffold is intended for academic presentation use. Update
-the license if the final project requires a different distribution policy.
+1. Go to `Settings` -> `Pages`
+2. Deploy from the default branch `/` (root)
+3. Site: `https://puqi7.github.io/Attune_SelfAnnotation/`
