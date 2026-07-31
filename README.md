@@ -22,7 +22,5 @@
 
 <hr/>
 
-Project page for Attune, built from the same Academic Project Page Template used by
-[`MRVS_VideoSensemaking`](https://puqi7.github.io/MRVS_VideoSensemaking/).
 
 ## More on the way ...
