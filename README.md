@@ -15,9 +15,9 @@
 </p>
 
 <p align="center">
-  <a href="https://puqi7.github.io/Attune_SelfAnnotation/">Project Page</a> |
-  <a href="static/pdfs/paper.pdf">Paper</a> |
-  <a href="prompts/">Prompts</a>
+  <a href="https://puqi7.github.io/Attune_SelfAnnotation/">🌐 Project Page</a> |
+  <a href="#">📄 Paper (Coming...)</a> |
+  <a href="https://github.com/Puqi7/Attune_SelfAnnotation/tree/main/prompts">💬 Prompts</a>
 </p>
 
 <hr/>

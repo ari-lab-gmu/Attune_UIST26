@@ -1,3 +1,3 @@
 # Prompts
 
-Place Attune prompt templates and related materials in this folder.
+This folder will hold the three Attune prompt files used in the paper.
