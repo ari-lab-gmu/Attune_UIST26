@@ -9,7 +9,7 @@ Sent via chat API as two messages (see Groq/OpenAI call sites in the same file):
     {"role": "user",   "content": <USER below>},
   ]
 Model used in the study (backend/.env): PATTERN_LLM_PROVIDER=groq
-  -> llama-3.3-70b-versatile (optional second pass: PATTERN_LLM_SECOND_PASS_PROVIDER=gemini)
+  -> PATTERN_LLM_SECOND_PASS_PROVIDER=gemini
 ================================================================================
 
 --------------------------------------------------------------------------------
