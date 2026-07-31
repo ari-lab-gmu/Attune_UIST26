@@ -1,0 +1,474 @@
+================================================================================
+AUTO-ANNOTATION PROMPT
+Source: backend/annotation_routes.py
+  - _build_auto_annotate_prompt(reviewed_pattern, shift_bundle, core_signal_validation)
+Called from POST /api/auto-annotate; the returned string is passed to
+_call_pattern_llm(prompt) (same provider stack as pattern mining).
+Model used in the study (backend/.env): PATTERN_LLM_PROVIDER=groq
+  -> llama-3.3-70b-versatile
+
+NOTE ON SYSTEM ROLE:
+  _call_groq / _call_openai still attach PATTERN_LLM_SYSTEM_INSTRUCTION as the
+  chat "system" message (the pattern schema instruction). The auto-annotation
+  body below is the "user" content. The staged instructions and JSON schema in
+  this user message are what actually govern auto-annotation behavior.
+
+PLACEHOLDER LEGEND (tokens below appear in the prompt body; at runtime the
+code replaces each token with real session data — nothing is fabricated here):
+
+  <<<PLACEHOLDER FOR: optional participant pattern-edit note>>>
+      Replaces edited_note in _build_auto_annotate_prompt.
+      Non-empty only when reviewed_pattern has participant_edits or
+      edited_fields; otherwise the live prompt inserts an empty string.
+
+  <<<PLACEHOLDER FOR: target shift feature-bundle JSON (one auto shift)>>>
+      Replaces shift_json in _build_auto_annotate_prompt.
+      = one target gaze shift being auto-annotated: request shift bundle
+        minus context_event_summary / change_hypothesis / gaze_event_summary,
+        plus core_signal_validation, then _strip_empty_for_llm(...).
+      When present, fields include robot_context_cues, visual_cues, gaze_cues,
+        preconditions, core_signal_validation, and shift identity fields.
+      Saved on disk as: 5_auto_input/auto_input_*.txt
+
+  <<<PLACEHOLDER FOR: reviewed pattern library JSON>>>
+      Replaces patterns_json in _build_auto_annotate_prompt.
+      = json.dumps([_slim_pattern(p) for p in reviewed_pattern["patterns"]], ...)
+      from the participant-reviewed library (4_reviewed_pattern / in-memory).
+================================================================================
+
+You are annotating ONE gaze shift.
+Fill the output JSON in the order shown. Each stage builds on the previous.
+Complete Stage 1 (context_analysis) and Stage 1.5 (case_interpretation) before
+pattern_consultation or Stage 3 synthesis. Do NOT write pattern_consultation or
+why_leave/why_arrive until Stage 1 and 1.5 are done.
+
+<<<PLACEHOLDER FOR: optional participant pattern-edit note>>>
+
+═══════════════════════════════════════════════════════
+STAGE 1 INPUT — Target shift (authoritative, code-computed)
+═══════════════════════════════════════════════════════
+<<<PLACEHOLDER FOR: target shift feature-bundle JSON (one auto shift)>>>
+
+═══════════════════════════════════════════════════════
+STAGE 2 INPUT — Participant’s reviewed pattern library
+═══════════════════════════════════════════════════════
+<<<PLACEHOLDER FOR: reviewed pattern library JSON>>>
+
+═══════════════════════════════════════════════════════
+STAGE 1 INSTRUCTIONS: context_analysis (evidence extraction)
+═══════════════════════════════════════════════════════
+Read ONLY the TARGET SHIFT above. Do NOT mention any pattern_id here.
+Identify what actually changed on each side of this gaze shift.
+
+Evidence sources — scan in this priority order:
+
+PRIORITY 1 — Robot context (strongest signal):
+  Leave-side (from_robot):
+  • robot_context_cues.from_robot.at_shift_state.*          → direct: exact state values at shift moment
+      Fields: action, motion, task, goal, gripper_status, head_position, wrist_position
+  • robot_context_cues.from_robot.at_shift_vs_plus_1s.behavior_fields_changed  → direct: which fields changed
+  • robot_context_cues.from_robot.before_minus5_to_minus1s.one_line_action/motion/gripper → indirect: lead-up
+  • robot_context_cues.from_robot.before_minus5_to_minus1s.behavior_event_counts_in_window → indirect
+  Arrive-side (to_robot):
+  • robot_context_cues.to_robot.at_shift_state.*             → direct
+  • robot_context_cues.to_robot.at_shift_vs_plus_1s.behavior_fields_changed → direct
+  • preconditions.gripper_status_at_shift_to_current         → direct
+
+PRIORITY 2 — Visual context:
+  Leave-side:  visual_cues.labels_lost_from_from_view                    → direct
+  Arrive-side: visual_cues.labels_newly_visible_in_to_view               → direct (empty = no gain)
+
+PRIORITY 3 — Gaze context (indirect only, cannot alone produce "strong"):
+  gaze_cues.dwell_before_sec, prior_shift_count_5s, context_shifts
+
+Code-authoritative facts — accept as ground truth, do NOT re-derive:
+  • preconditions.from_view_is_gripper_camera / to_view_is_gripper_camera
+  • preconditions.leave_side_has_visual_label_loss  (true only if labels_lost_from_from_view is non-empty)
+  • preconditions.arrive_side_has_visual_label_gain (true only if labels_newly_visible_in_to_view is non-empty)
+  • preconditions.leave_side_has_robot_behavior_delta
+  • preconditions.arrive_side_has_robot_behavior_delta
+  • core_signal_validation.per_pattern[*].leave_core_signal_ok / arrive_core_signal_ok
+
+Evidence strength definitions:
+  "direct"   — a specific non-empty field proves the change happened
+  "indirect" — inferred from timing, sequence, or cross-view contrast; no single field proves it
+  "absent"   — looked for evidence, found nothing
+
+Support level definitions:
+  "strong" — at least one direct-strength cue found
+  "weak"   — indirect evidence only
+  "none"   — no supporting cue of any kind
+
+TWO CRITICAL RULES:
+1. destination_salient_labels_at_shift shows what is PRESENT, not what CHANGED.
+   Only labels_newly_visible_in_to_view counts as a direct arrive-side gain.
+   If labels_newly_visible_in_to_view is empty, arrive_support cannot be "strong"
+   based on salient labels alone.
+2. Gaze metrics (dwell_before_sec, prior_shift_count_5s, etc.) describe the
+   shift pattern, not scene changes. They may support indirect evidence but
+   cannot alone produce a "strong" support rating.
+
+═══════════════════════════════════════════════════════
+STAGE 1.5 INSTRUCTIONS: case_interpretation (CASE-LEVEL INTERPRETATION)
+═══════════════════════════════════════════════════════
+After Stage 1 evidence extraction, interpret this shift as a WHOLE before pattern consultation.
+This stage only: (a) summarize what the participant is doing with this gaze shift, and
+(b) decide whether formal why_leave / why_arrive are warranted vs hint/hypothesis only.
+
+Use TARGET SHIFT + Stage 1 outputs only. Do NOT read the reviewed pattern library for 1.5.
+
+Answer in prose inside the JSON fields:
+
+1) What kind of shift is this overall?
+   Set overall_case_type to exactly one of:
+   manipulation_check / robot_monitoring / cross_robot_comparison /
+   object_following / scene_scan / rapid_scan_glance / uncertain_other
+
+2) Which side carries the stronger meaningful evidence?
+   Set meaningful_side to one of: leave / arrive / both / neither
+
+3) Does this shift deserve formal why annotation, or only hint/hypothesis?
+   Set formal_annotation_recommended.leave and .arrive (booleans) independently.
+   If the case is ambiguous, rapid, or present-state-only, prefer false.
+
+4) Are any current cues merely present-state descriptions rather than true reasons?
+   List short identifiers in present_state_warnings (e.g. "gripper_open_only", "salient_labels_no_delta").
+
+5) Rapid scan + next shift within 1s:
+   If gaze_cues.next_shift_within_1s is true AND dwells are short (rapid_scan_glance),
+   lower interpretation_confidence (use 0.0–0.4 range) and set
+   formal_annotation_recommended toward false for formal why items unless strong change evidence exists.
+
+Fill one_sentence_summary as one clear sentence describing what this shift is doing in context.
+
+═══════════════════════════════════════════════════════
+STAGE 2 INSTRUCTIONS: pattern_consultation
+═══════════════════════════════════════════════════════
+Stage 1.5 reminder: **candidate slots are possible evidence sources, not a mandatory checklist.**
+Later stages must NOT emit a formal why item for every non-empty slot.
+
+Goal: patterns do NOT pick the answer first. They only **weight pre-defined shift candidates**.
+
+WRONG workflow (forbidden): pick a favorite pattern → bend the shift story to match it.
+RIGHT workflow (required):
+  (A) From TARGET SHIFT + Stage 1 only, define three fixed candidate slots per side (see schema).
+      These rows use **shift_summary_one_line** + **verified_cue_paths** only — do NOT put a
+      pattern_id in a candidate row in order to \"choose\" that pattern.
+  (B) For **each** pattern in STAGE 2 INPUT, fill **patterns_weight_candidates**: how that pattern
+      supports each slot on leave and on arrive. Stance values per slot:
+        \"full\"    — this pattern clearly supports that candidate (same as “supports candidate X”)
+        \"partial\" — partially supports that candidate
+        \"none\"    — does not support that candidate for this shift
+      A pattern may give full to one slot, partial to another, and none to the rest — that is normal.
+      If the library lists K patterns, **patterns_weight_candidates** must contain exactly K objects
+      (one per pattern_id, no duplicates, no omissions).
+  (C) Merge (A)+(B): assign **sort_rank** on each candidate row (1 = best) using Stage-1 strength
+      plus pattern weights (full > partial > none; use multiple patterns’ stances as corroboration).
+  (D) Only after (C): set **leave_best_pattern_id** / **arrive_best_pattern_id** as the single
+      pattern_id that best backs the **sort_rank=1** slot’s evidence_family (prefer full over
+      partial; respect eligibility). If no pattern gives full/partial to that winning slot, use \"\".
+
+The three candidate slots per side (fixed order in JSON):
+
+  • robot_context      — anchor only on robot_context_cues for that side.
+  • visual_change      — anchor only on visual_cues for that side (Stage-1 rules).
+  • pattern_analogy    — a **hypothesis slot**: how this shift might resemble prior reviewed cases,
+    stated from shift-visible facts + library *topics* — still no committing pattern_id here;
+    pattern_ids enter only in **patterns_weight_candidates**.
+
+If the pattern library is empty, **patterns_weight_candidates** is [] and ranking uses Stage-1 only.
+
+Eligibility gate (applies when mapping patterns to sides):
+  If core_signal_validation.per_pattern[pid].leave_core_signal_ok is false → for that pid,
+  all **leave** stances in patterns_weight_candidates must be \"none\", and pid cannot be
+  leave_best_pattern_id or selected in leave_match. Same for arrive / arrive_core_signal_ok.
+
+Aggregate fields **leave_pattern_support** / **arrive_pattern_support** describe how strongly the
+chosen **leave_best_pattern_id** / **arrive_best_pattern_id** backs the winning (sort_rank=1) slot:
+   \"strong\"  — that pattern gave \"full\" toward that slot (or best available partial with strong Stage-1)
+   \"partial\" — \"partial\" stance toward that slot
+   \"none\"    — best_pattern_id is \"\" OR stance was none for the winning slot
+
+HARD RULE — pattern cannot create evidence:
+   If Stage 1 leave_support = "none" → leave_pattern_support is irrelevant; no formal why_leave.
+   If Stage 1 arrive_support = "none" → arrive_pattern_support is irrelevant; no formal why_arrive.
+
+HARD RULE — present state / view property cannot alone justify formal why:
+   A present robot/view state alone cannot produce a formal why item. Fields may describe what exists
+   in the frame without explaining why the participant shifted.
+   Examples that are NOT sufficient by themselves (may only support a why if paired with change,
+   contrast, corroborating visual evidence, or a strongly aligned eligible reviewed pattern):
+     • to_view_is_gripper_camera = true
+     • from_view_is_gripper_camera = true
+     • gripper_status = Open / Closed (static snapshot without delta)
+     • destination_salient_labels_at_shift alone (presence, not change)
+   to_view_is_gripper_camera, from_view_is_gripper_camera, destination_salient_labels_at_shift describe
+   **what the view has**, NOT **why the user shifted**. They can only be supporting/hypothesis/pattern-alignment
+   cues unless upgraded per below. Formal why_leave / why_arrive MUST be grounded in **change evidence**
+   or case_interpretation-approved meaningful explanation.
+   Allow formal why ONLY when at least one holds:
+     • labels_newly_visible_in_to_view non-empty (arrive) or labels_lost_from_from_view non-empty (leave)
+     • behavior_fields_changed non-empty (robot state changed at shift)
+     • from/to contrast exists and aligns with the reviewed pattern's signal
+     • explicit current-shift cue indicating user was "looking at details"
+   Otherwise → put in hint only; why must be [].
+
+HARD RULE — newly visible object ≠ automatic arrive reason:
+   A newly visible label is not automatically an arrive reason. Treat as formal why_arrive only if the
+   whole case (Stage 1.5 + shift story) suggests **deliberate attention**, not incidental visibility.
+   Background objects in a rapid_scan_glance should usually stay hints, not formal why_arrive.
+   labels_newly_visible_in_to_view alone does NOT justify formal why_arrive. To upgrade, at least ONE of:
+     • dwell_after_sec is not short (not rapid scan / instantaneous glance)
+     • gaze_cues.next_shift_within_1s = false (user did not shift away quickly)
+     • object reads as operation target / object of interest, not background clutter
+     • pattern's supporting_shift_ids are semantically similar to this shift
+     • change_hypothesis has stronger task relevance, not just generic visual gain
+   If none hold → arrive_hint only; cannot be high-confidence formal why_arrive (max 0.45 if kept at all).
+
+═══════════════════════════════════════════════════════
+STAGE 3 INSTRUCTIONS: annotation synthesis
+═══════════════════════════════════════════════════════
+HARD RULE — case_interpretation.formal_annotation_recommended:
+Do NOT generate a formal why item unless case_interpretation.formal_annotation_recommended for that side is true.
+If formal_annotation_recommended is false, use hint or nothing.
+
+**Gate:** Emit formal why_leave / why_arrive items ONLY if case_interpretation.formal_annotation_recommended
+for that side is true AND the decision table below allows it AND the cue **meaningfully explains** the shift
+(not mere presence). If formal_annotation_recommended.leave is false, why_leave should usually be [] (use
+leave_hint). Same for arrive.
+
+Tie formal why items to **shift evidence**: prefer verified_cue_paths from the best-supported candidate rows
+(sort_rank orders plausibility, not obligation). Align matched_pattern_id with
+leave_best_pattern_id / arrive_best_pattern_id only as **back-weighting**, not as the story driver.
+Each item uses **context_anchor** (field_path, value) for context_based reasons; free_text items use
+empty context_anchor. When you do emit a robot_context formal why, use context_kind="robot_context" and
+valid robot_context_cues.* paths — but only when that row truly explains the shift per Stage 1.5.
+
+Apply this decision table independently for leave and arrive (Stage-2 column = aggregate backing for
+the **winning** candidate slot from patterns_weight_candidates + leave_pattern_support / arrive_pattern_support).
+If case_interpretation says no formal annotation for a side, override toward why=[] regardless of sort_rank:
+
+  Stage-1 support | Stage-2 pattern support | Required output
+  ───────────────────────────────────────────────────────────────────────
+  strong          | strong                  | formal why; evidence_basis="direct_cue";    confidence 0.7–0.9
+  strong          | partial                 | formal why; evidence_basis="direct_cue";    confidence 0.5–0.7
+  strong          | none                    | formal why; evidence_basis="direct_cue";    confidence 0.5–0.7
+                  |                         |   matched_pattern_id=""; overall_case includes "novel"
+  weak            | strong / partial        | hint ONLY — set why=[] and populate hint
+  weak            | none                    | hint ONLY
+  none            | any                     | why=[]; hint with a brief observation (what was absent)
+
+overall_case:
+  "existing_pattern" — both sides matched strong/partial pattern
+  "partial_pattern"  — one side novel, other existing; or one side empty
+  "novel_case"       — both sides weak/none, OR strong evidence but no pattern match on both sides
+
+ANNOTATION TYPE RULES — reason_source + context_kind per item:
+
+reason_source="context_based" — cite a concrete cue via context_anchor (field_path, value):
+  context_kind="robot_context": label_type="taxonomy", label="robotX|level1|<base_value>".
+  base_value MUST be verbatim from from_robot.at_shift_state or to_robot.at_shift_state.
+  context_anchor.field_path: use the real paths from TARGET SHIFT, e.g. robot_context_cues.from_robot.at_shift_state.gripper_status, robot_context_cues.to_robot.at_shift_state.action.
+  Level1 mapping: action, motion, task, goal, status-gripper, status-head, status-wrist.
+  context_kind="visual_context": label_type="plain_text", context_anchor.field_path e.g. visual_cues.labels_lost_from_from_view.
+
+reason_source="free_text" — inference, library_analogy, no concrete cue:
+  context_kind="", context_anchor={field_path:"", value:""}, label_type="plain_text".
+  text: 3–8 word noun phrase. Examples: "checking manipulation outcome", "participant checking broader scene".
+
+FORMAL WHY ITEMS (NOT slot-for-slot):
+  A candidate slot is only a **possible** source, not a guaranteed annotation item.
+  Do NOT generate a formal why item just because a candidate slot has verified_cue_paths or a low sort_rank.
+  Generate a formal why item only when case_interpretation + the decision table agree the cue **meaningfully
+  explains** the shift. Otherwise leave the cue implicit in hints, pattern_alignment, or omit it.
+  You may output zero formal items on a side even when multiple slots have paths.
+  When you do include items, up to 3 per side; prefer the strongest explanatory cues first (often aligns
+  with sort_rank, but not required if a lower-ranked cue is the real explanation).
+  robot_context rows → typically reason_source="context_based", context_kind="robot_context" when formal.
+  visual_change rows → reason_source="context_based", context_kind="visual_context" when formal.
+  pattern_analogy → often hint or free_text with evidence_basis="library_analogy"; rarely force to formal why.
+
+SOURCE FIDELITY (when you emit a formal item):
+  robot_context item: context_anchor.field_path must be a robot_context_cues.from_robot.* or robot_context_cues.to_robot.* path (e.g. at_shift_state.gripper_status).
+  visual_context item: context_anchor.field_path must be a visual_cues.* path.
+  Do not force the first why item to match sort_rank=1 robot_context if that slot is not the true explanation.
+
+matched_cues in leave_match/arrive_match:
+  When there is a substantive match, copy the verified_cue_paths you actually relied on for formal why
+  (or the best candidate summary paths). May be empty when why is [] and only hints apply.
+
+Hints (leave_hint / arrive_hint):
+  Required whenever why is []. Also encouraged when evidence is weak.
+  text: 1–2 sentences. What was observed and why the closest pattern did not fit.
+  status: "hint" | "hypothesis" | "fallback"
+
+Hint quality rule:
+  Even when arrive_support = "weak", if **patterns_weight_candidates** shows partial/full toward
+  the arrive slots for an eligible pattern whose text fits to_view, populate arrive_hint.text with
+  that pattern_id and supporting_shift_ids. status = "hypothesis", confidence 0.4–0.6.
+  Do NOT promote a pattern to the hint solely because its title is catchy — tie to stance + shift.
+
+═══════════════════════════════════════════════════════
+OUTPUT QUALITY RULES (hints + formal why)
+═══════════════════════════════════════════════════════
+HINT STYLE RULES
+
+Hints must be conservative and minimal.
+A hint is only a weak possible interpretation, not a mini-explanation essay.
+
+When generating leave_hint or arrive_hint:
+  • prefer one short sentence
+  • avoid strong narrative claims
+  • avoid saying a pattern "aligns" unless the alignment is clearly meaningful
+  • do not restate multiple weak cues as if they form a strong explanation
+  • if the case is rapid_scan_glance, hints should sound brief and uncertain
+
+Examples of good hints:
+  • "The shift may reflect a quick check rather than a strong semantic reason."
+  • "The destination view may offer broader monitoring context, but the evidence is weak."
+  • "A new object became visible, but it is unclear whether it drove the shift."
+
+Examples of bad hints:
+  • long pattern-heavy narratives
+  • explanations that sound stronger than the evidence
+  • treating weak analogy as if it were participant intent
+
+FORMAL WHY STYLE RULES
+
+A formal why item should describe the meaningful reason for the shift,
+not merely restate a field name or a raw state.
+
+Good formal why items should:
+  • sound like a participant annotation, not a database entry
+  • summarize the reason at the right level
+  • stay grounded in the anchor cue, but not be limited to copying it verbatim
+
+Bad formal why items include:
+  • pure field restatements
+  • labels without human meaning
+  • explanations that only say what existed, not why the participant shifted
+
+═══════════════════════════════════════════════════════
+OUTPUT — Return strict JSON only, no markdown
+Fill context_analysis FIRST, then case_interpretation (required top-level object; gates formal why per side via
+formal_annotation_recommended.leave / .arrive), then pattern_consultation and the rest.
+**leave_candidates / arrive_candidates must NOT contain pattern_id**
+(patterns only **weight** slots via patterns_weight_candidates). pattern_id values appear starting
+with patterns_weight_candidates, leave_best_pattern_id, and leave_match.
+═══════════════════════════════════════════════════════
+{
+  "context_analysis": {
+    "leave_evidence": [
+      {"cue_path": "visual_cues.labels_lost_from_from_view", "cue_value": "[...]", "strength": "direct|indirect|absent"}
+    ],
+    "arrive_evidence": [
+      {"cue_path": "...", "cue_value": "...", "strength": "direct|indirect|absent"}
+    ],
+    "leave_support": "strong|weak|none",
+    "arrive_support": "strong|weak|none"
+  },
+  "case_interpretation": {
+    "overall_case_type": "manipulation_check|robot_monitoring|cross_robot_comparison|object_following|scene_scan|rapid_scan_glance|uncertain_other",
+    "one_sentence_summary": "",
+    "meaningful_side": "leave|arrive|both|neither",
+    "formal_annotation_recommended": {
+      "leave": false,
+      "arrive": false
+    },
+    "present_state_warnings": [],
+    "interpretation_confidence": 0.0
+  },
+  "pattern_consultation": {
+    "leave_candidates": [
+      {
+        "evidence_family": "robot_context",
+        "shift_summary_one_line": "shift-only; no pattern_id",
+        "verified_cue_paths": ["robot_context_cues...."],
+        "sort_rank": 1
+      },
+      {
+        "evidence_family": "visual_change",
+        "shift_summary_one_line": "",
+        "verified_cue_paths": ["visual_cues...."],
+        "sort_rank": 2
+      },
+      {
+        "evidence_family": "pattern_analogy",
+        "shift_summary_one_line": "hypothesis vs prior cases; still no pattern_id here",
+        "verified_cue_paths": ["optional gaze_cues or shift-local refs"],
+        "sort_rank": 3
+      }
+    ],
+    "arrive_candidates": [
+      {
+        "evidence_family": "robot_context",
+        "shift_summary_one_line": "",
+        "verified_cue_paths": [],
+        "sort_rank": 1
+      },
+      {
+        "evidence_family": "visual_change",
+        "shift_summary_one_line": "",
+        "verified_cue_paths": [],
+        "sort_rank": 2
+      },
+      {
+        "evidence_family": "pattern_analogy",
+        "shift_summary_one_line": "",
+        "verified_cue_paths": [],
+        "sort_rank": 3
+      }
+    ],
+    "patterns_weight_candidates": [
+      {
+        "pattern_id": "p1",
+        "leave": {
+          "robot_context": "full|partial|none",
+          "visual_change": "full|partial|none",
+          "pattern_analogy": "full|partial|none"
+        },
+        "arrive": {
+          "robot_context": "full|partial|none",
+          "visual_change": "full|partial|none",
+          "pattern_analogy": "full|partial|none"
+        }
+      }
+    ],
+    "leave_best_pattern_id": "",
+    "leave_pattern_support": "strong|partial|none",
+    "arrive_best_pattern_id": "",
+    "arrive_pattern_support": "strong|partial|none",
+    "mismatch_notes": []
+  },
+  "leave_match": {
+    "match_type": "single|mixed|none",
+    "primary_pattern_id": "",
+    "secondary_pattern_id": "",
+    "best_candidate_pattern_id": "",
+    "candidate_score": 0.0,
+    "matched_supporting_shift_ids": [],
+    "matched_cues": [],
+    "mismatch_notes": []
+  },
+  "arrive_match": {
+    "match_type": "single|mixed|none",
+    "primary_pattern_id": "",
+    "secondary_pattern_id": "",
+    "best_candidate_pattern_id": "",
+    "candidate_score": 0.0,
+    "matched_supporting_shift_ids": [],
+    "matched_cues": [],
+    "mismatch_notes": []
+  },
+  "why_leave": [],
+  "why_arrive": [],
+  "leave_hint": {"text": "", "confidence": 0.0, "status": "hint|hypothesis|fallback"},
+  "arrive_hint": {"text": "", "confidence": 0.0, "status": "hint|hypothesis|fallback"},
+  "shift_type": "Reactive|Proactive|Mixed",
+  "overall_case": "existing_pattern|partial_pattern|novel_case",
+  "pattern_alignment": "Summarize how evidence + case_interpretation + patterns_weight_candidates align; cite supporting_shift_ids when relevant; note mismatches for partial_pattern or novel_case. Do not claim a cue as explanatory if it was only present-state."
+}
+
+When why_leave or why_arrive is non-empty, each element may include reason_source, context_kind,
+context_anchor, label_type, label, text, explanation, confidence, evidence_basis, matched_pattern_id,
+pattern_support (same shape as prior auto-annotate schema). Prefer empty arrays when formal_annotation_recommended is false.

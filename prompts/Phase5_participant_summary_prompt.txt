@@ -1,0 +1,73 @@
+================================================================================
+PARTICIPANT SUMMARY PROMPT (Phase 5 — reflective summarization)
+Source: backend/annotation_routes.py
+  - PARTICIPANT_SUMMARY_SYSTEM_INSTRUCTION
+  - _build_participant_summary_prompt(input_obj)
+  - _build_participant_summary_input_bundle(req)
+Called from POST /api/participant-summary/generate.
+Runtime call site concatenates system + user into one string, then passes it to
+_call_pattern_llm(...):
+  full_prompt = PARTICIPANT_SUMMARY_SYSTEM_INSTRUCTION + "\n\n" + user_prompt
+Model used in the study (backend/.env): PARTICIPANT_SUMMARY_LLM_PROVIDER=gemini
+  -> gemini-2.5-flash (PATTERN_LLM_GEMINI_MODEL / GEMINI_MODEL)
+
+NOTE ON SYSTEM ROLE:
+  _call_gemini / _call_groq / _call_openai still attach PATTERN_LLM_SYSTEM_INSTRUCTION
+  as the chat "system" / systemInstruction (the pattern-schema instruction from
+  Phase 3). The concatenated full_prompt below is the "user" content. The
+  PARTICIPANT_SUMMARY_SYSTEM_INSTRUCTION text and INPUT_JSON schema in this user
+  message are what actually govern reflective-summary behavior.
+
+PLACEHOLDER LEGEND (tokens below appear in the prompt body; at runtime the
+code replaces each token with real session data — nothing is fabricated here):
+
+  <<<PLACEHOLDER FOR: participant-summary INPUT_JSON>>>
+      Replaces the live json.dumps(input_obj, ...) inside
+      _build_participant_summary_prompt.
+      Built by _build_participant_summary_input_bundle(req).
+      Top-level keys from code:
+        step, userId, packageId, recordingBasename, experimentId,
+        reviewed_patterns, initial_annotations_compact,
+        auto_annotations_by_shift, stats
+      reviewed_patterns:
+        patterns[] — compact reviewed library
+          (pattern_id, title, description, pattern_scope, supporting_shift_ids)
+        participant_edits, edited_fields — from 4_reviewed_pattern/
+      initial_annotations_compact:
+        per_shift_compact[] — truncated hand annotations
+          (reason_leave/arrive, explanation, shift_type, confidence,
+           memory_clarity); optional participant_edits_note
+      auto_annotations_by_shift:
+        per shift_id — matched_pattern_id, edited_by_user, shift_type,
+          pattern_alignment, leave/arrive primary_pattern_id
+      stats:
+        reviewed_pattern_count, auto_annotation_shift_count,
+        auto_edited_by_user_count, matched_pattern_id_counts,
+        shift_ordinals_1_based
+      Concrete filled examples on disk:
+        10_participant_summary/participant_summary_input_*.json
+        10_participant_summary/participant_summary_prompt_*.txt
+================================================================================
+
+--------------------------------------------------------------------------------
+[SYSTEM INSTRUCTION TEXT]
+The following text is PARTICIPANT_SUMMARY_SYSTEM_INSTRUCTION.
+At runtime it is prepended to the user prompt (see NOTE ON SYSTEM ROLE above);
+it is NOT sent as a separate chat "system" role for the Gemini study path.
+--------------------------------------------------------------------------------
+You write a participant-facing reflective summary for a gaze-annotation study. The participant will read this screen. Use plain English only. Do not use JSON field names, API jargon, or internal codes as visible prose. Ground every claim in the INPUT_JSON: do not invent shifts or patterns. Return STRICT JSON only (no markdown fences), with exactly these top-level keys:
+1) "part1_annotation_style_bullets": array of 4 to 5 strings. Each bullet describes a habit the system inferred from their early annotations (reason chips, explanations, confidence, shift type), written as if speaking to the participant (second person 'you'). No bullet points inside strings; each array element is one bullet.
+2) "part2_pattern_cards": array of one object per reviewed pattern in INPUT_JSON.reviewed_patterns.patterns. Each object MUST include: "pattern_id" (string, must match INPUT), "label" (single capital letter A,B,C,... in order), "short_title" (short plain-English title), "description" (what this pattern means in plain language), "applies_to" (exactly one of: leave | arrive | both — use pattern_scope from input when present), "example_shift_ids" (array of shift_id strings from supporting_shift_ids when possible; otherwise from INPUT.auto_annotations_by_shift keys that best exemplify the pattern), "uncertainty" (one sentence: when this pattern might not apply).
+3) "part3_how_patterns_shaped_suggestions": one string containing one or more narrative paragraphs (NOT a bullet list). Explain how reviewed patterns influenced later auto-annotations: which patterns seemed helpful, which might have been applied too broadly, and what the participant changed when they edited (use INPUT.stats and per-shift edited_by_user). You MUST align any counts with INPUT.stats (do not contradict the numbers).
+If INPUT is sparse, still return valid JSON with shorter text and conservative wording.
+
+--------------------------------------------------------------------------------
+[USER MESSAGE]
+The following text is the return value of _build_participant_summary_prompt(input_obj).
+At runtime it is concatenated after the SYSTEM INSTRUCTION TEXT above.
+--------------------------------------------------------------------------------
+
+INPUT_JSON:
+<<<PLACEHOLDER FOR: participant-summary INPUT_JSON>>>
+
+Respond with JSON only per the system instruction.

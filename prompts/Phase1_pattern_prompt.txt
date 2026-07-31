@@ -1,0 +1,236 @@
+================================================================================
+PATTERN MINING PROMPT
+Source: backend/annotation_routes.py
+  - PATTERN_LLM_SYSTEM_INSTRUCTION
+  - _build_llm_prompt(...)
+Sent via chat API as two messages (see Groq/OpenAI call sites in the same file):
+  messages = [
+    {"role": "system", "content": <SYSTEM below>},
+    {"role": "user",   "content": <USER below>},
+  ]
+Model used in the study (backend/.env): PATTERN_LLM_PROVIDER=groq
+  -> llama-3.3-70b-versatile (optional second pass: PATTERN_LLM_SECOND_PASS_PROVIDER=gemini)
+================================================================================
+
+--------------------------------------------------------------------------------
+[SYSTEM MESSAGE]
+The following text is sent as the chat "system" role content.
+--------------------------------------------------------------------------------
+Return strict JSON only. Each pattern must include: pattern_id, pattern_rule, review_question, pattern_scope, category, title, description, leave, arrive, shift_type_tendency, confidence, confidence_basis, supporting_shift_ids, evidence. pattern_scope must be one of: leave_only, arrive_only, both. Set scope from evidence only: leave_only / arrive_only when only that side has substantive leave/arrive material; both only when both sides do. Do not default to both for coverage; do not invent a missing side. Each included side must read as a complete mini-pattern on its own. Cluster patterns primarily from user_reason_leave_push and user_reason_arrive_pull. Use memory_clarity and self_confidence only to assess reliability. pull = arrive; push = leave. Do not output annotation_tendency or trigger_cues.
+
+--------------------------------------------------------------------------------
+[USER MESSAGE]
+The following text is sent as the chat "user" role content.
+It is the return value of _build_llm_prompt(payload).
+
+PLACEHOLDER LEGEND (tokens below appear in the prompt body; at runtime the
+code replaces each token with real session data — nothing is fabricated here):
+
+  <<<PLACEHOLDER FOR: valid hand-annotated shift_id list>>>
+      Replaces the live value of allowed_ids_csv in _build_llm_prompt.
+      Built as: sorted(_annotated_marker_keys(llm_input))
+      = comma-separated shift_id values present in this call's
+        annotated_shift_feature_bundles (from the participant's hand
+        annotations). Shape example only: robot1-123.45, robot2-456.78
+
+  <<<PLACEHOLDER FOR: annotated_shift_feature_bundles JSON (this session)>>>
+      Replaces the live Input JSON appended at the end of _build_llm_prompt.
+      Built as: json.dumps(_strip_empty_for_llm(_build_llm_input(payload)))
+      Top-level keys from code: packageId, recordingBasename, userId,
+        input_policy, annotated_shift_feature_bundles
+      Each bundle (when non-empty) contains fields produced by the feature-
+      bundle helpers: user_annotation, robot_context_cues, visual_cues,
+      gaze_cues.
+      Concrete filled examples on disk:
+        2_llm_pattern_input/pattern_input_*.json  (field llm_input)
+        2_llm_pattern_input/pattern_input_*.prompt.txt
+--------------------------------------------------------------------------------
+
+You are extracting recurring PARTICIPANT-LEVEL PATTERNS from one multi-robot gaze-shift session.
+PURPOSE: Your output will be shown to the SAME PARTICIPANT who made these annotations, 
+so they can review, confirm, or edit the patterns. 
+leave.user_says and arrive.user_says appear as editable chips. 
+pattern_rule is shown as a first-person summary the participant can immediately recognize. 
+review_question is shown as a prompt to guide their confirmation. 
+Later, these patterns and their supporting_shift_ids will be used to select 
+5 representative gaze shifts for annotation.
+
+CRITICAL: Each annotated gaze shift is a 3-LAYER EXPLANATION UNIT:
+  Layer 1 — Observable context: robot_context_cues + visual_cues + gaze_cues
+  Layer 2 — Gaze-shift behavior: from_view, to_view, transition_type, dwell, density
+  Layer 3 — Participant annotation: user_reason_leave_push / arrive_pull, explanation, shift_type
+The annotation (Layer 3) is the participant's explanation of a shift situated in Layers 1+2.
+NEVER model annotation separately from context and gaze behavior.
+Participant-written reasons (Layer 3) are the PRIMARY source for what a pattern MEANS.
+Robot/visual/gaze context (Layers 1+2) explains WHEN and WHY the pattern triggers.
+
+SYSTEM: You analyze a HUMAN PARTICIPANT's eye-tracking, NOT the robot. 
+'Pull' = what attracted gaze to a view (arrive); 'Push' = what made them look away (leave). 
+Camera names (gripper/head/ceiling) are views the participant watched.
+
+FOLLOW THESE STEPS IN ORDER before writing any JSON:
+
+STEP 1 — Parse each shift as a 3-layer unit.
+  For each annotated_shift_feature_bundle, read ALL THREE layers together:
+    Layer 1 context:  robot_context_cues, visual_cues, gaze_cues
+    Layer 2 behavior: from_view, to_view, transition_type, dwell_before/after, context_shifts (≤2 segments)
+    Layer 3 annotation: user_reason_leave_push, user_reason_arrive_pull,
+                        explanation, shift_type, memory_clarity, self_confidence
+  Never read Layer 3 alone. Every annotation must be understood against its Layer 1+2 backdrop.
+
+STEP 2 — Cluster by Layer 3 semantics (annotation-first) but need to consider joint shift logic from Layer 1+2.
+  Group shifts whose user_reason_leave_push and user_reason_arrive_pull express the same intent.
+  Same underlying situation explained differently = ONE cluster = ONE pattern candidate.
+  Push + pull of the same trigger = still ONE cluster.
+  Only after clustering by annotation: check whether Layers 1+2 are consistent within each cluster.
+  SPLIT RULE: If a shift's leave_push and arrive_pull map to DIFFERENT clusters,
+  prefer separate patterns or side-dominant assignment — do NOT force a single 'both' pattern
+  to cover incompatible stories.
+
+STEP 3 — For each cluster, characterize all three layers and set pattern_scope.
+  Decide pattern_scope from evidence only (never for coverage quotas):
+    leave_only:  only leave-side reasoning is substantive; set arrive empty.
+    arrive_only: only arrive-side reasoning is substantive; set leave empty.
+    both:        both sides have substantive material in this cluster.
+  Do NOT invent a missing leave or arrive half. Single-sided patterns are valid.
+  Each side you include must stand alone: a reader who only reads leave OR only arrive
+  should still understand the pattern; do not split one idea across both sides.
+  Layer 1+2 → leave.signal / arrive.signal (only for the side(s) in scope):
+    What observable context (robot state, visual labels, gaze dynamics) co-occurs
+    when the participant leaves / arrives? One sentence each.
+  Layer 3 → leave.user_says / arrive.user_says (only for the side(s) in scope):
+    2–4 SHORT ABSTRACTED phrases from the participant's own reasons — NOT raw quotes.
+    TRANSFORM: 'robot1 | Status-Gripper | Closed cannot grab anything'
+             → 'gripper closed, no manipulation progress'
+    TRANSFORM: 'robot2 | Visual | ①bottle the bottle is close, could be target'
+             → 'target object visible and reachable in destination view'
+  shift_type_tendency: count Reactive/Proactive/Mixed across supporting shifts
+  (exclude shifts where shift_type is empty).
+  - If ≥70% agree → use that type.
+  - Otherwise → 'Mixed'.
+  - If ALL are empty → omit the field or set 'Mixed'.
+  confidence: aggregate memory_clarity + self_confidence across the cluster.
+    'Clearly remember' + 'High' → High; 'Guessing' / 'Low' → Low; mixed → Medium.
+
+STEP 4 — Coverage verification (do this before writing JSON).
+  Go through each shift_id in the valid list:
+    <<<PLACEHOLDER FOR: valid hand-annotated shift_id list>>>
+  For each shift_id:
+    (a) Read its Layer 3 annotation.
+    (b) Compare with clusters from Step 2.
+    (c) If it matches an existing cluster → add to that pattern's supporting_shift_ids + evidence.
+    (d) If it does not match any strong cluster → add to a Low-confidence catch-all, 
+or omit if only 1–2 true outliers.
+  PREFER: every shift_id in at least one pattern.
+  After assigning all shift_ids, output a scratchpad line (in your reasoning, not in JSON):
+  "COVERAGE CHECK: covered=[...], uncovered=[...]"
+  If uncovered is non-empty, you MUST either:
+    (a) add them to an existing pattern's supporting_shift_ids, or
+    (b) create a catch-all pattern with confidence='Low'.
+  Outputting JSON with uncovered shift_ids is a HARD FAILURE.
+
+STEP 5 — Write pattern_rule and review_question for each pattern.
+  pattern_rule: first-person sentence the participant will recognize immediately.
+    Format: 'When [Layer 1+2 context], I tend to [Layer 3 explanation].'
+    Example: 'When the gripper view shows no activity, I look away to check broader progress.'
+  review_question: one concrete YES/NO or short-answer question for the participant.
+    It should let them confirm, revise, or reject the pattern.
+    Example: 'Does this match how you usually decide to switch away from the gripper view?'
+
+INPUT (one session):
+Empty fields are omitted; only non-empty values are included in each bundle.
+- annotated_shift_feature_bundles: one bundle per annotated shift.
+  • user_annotation     — PRIMARY (Layer 3): reasons (leave_push/arrive_pull/other),
+                          explanation, shift_type, memory_clarity, self_confidence,
+                          from_view, to_view.
+  • robot_context_cues  — Layer 1: compressed -5s..-1s + at_shift vs +1s.
+  • visual_cues         — Layer 1: label deltas + current_relevance.
+  • gaze_cues           — Layer 2: dwells, density, commitment, return-to-view;
+                          context_shifts compact string (last 2 transitions before shift).
+                          context_event_summary and gaze_event_summary are omitted in this payload;
+                          use robot + visual + gaze_cues directly.
+
+Valid shift_id values:
+<<<PLACEHOLDER FOR: valid hand-annotated shift_id list>>>
+
+OUTPUT: 3–5 patterns as JSON {"patterns": [...]}.
+Each pattern MUST have ALL of these fields:
+
+pattern_id        e.g. 'p1'
+
+category          short mechanism label, e.g.:
+                  'gripper-state-driven', 'object-appearance-triggered',
+                  'manipulation-detail-seeking', 'wider-context-seeking'.
+                  BAD: 'common_push_factors', 'arrive_pull_reasons'.
+
+title             ≤10 words, concrete observation about THIS participant.
+
+description       2–3 sentences (third person):
+                  'When [Layer 1+2 context signal], this participant tends to [leave/arrive]
+                   because [Layer 3 abstracted reason]. Shift type is typically [Reactive/Proactive].'
+
+pattern_rule      ONE first-person sentence the participant can immediately recognize.
+                  Format: 'When [context], I tend to [annotation explanation].'
+                  This is shown directly to the participant in the review UI.
+
+review_question   ONE concrete question shown to the participant for confirmation.
+                  Should be answerable with yes/no or a short edit.
+                  Example: 'Does this match why you usually switch away from the gripper view?'
+
+pattern_scope     'leave_only' | 'arrive_only' | 'both' — which side(s) this pattern covers.
+  leave_only:     only leave-side material is substantive; set arrive empty.
+  arrive_only:    only arrive-side material is substantive; set leave empty.
+  both:             both sides have substantive material in-cluster.
+  Do NOT invent a missing leave or arrive half. Do NOT pick 'both' to maximize coverage.
+
+leave             Object with two fields (REQUIRED only when pattern_scope is 'leave_only' or 'both'):
+  signal:         one sentence — observable Layer 1+2 cue co-occurring with leaving.
+  user_says:      list of 2–4 SHORT ABSTRACTED phrases (Layer 3, not raw quotes).
+                  Shown to participant as editable chips.
+  If pattern_scope=arrive_only, omit or set leave to empty object.
+
+arrive            Same structure as leave, for arriving at destination view.
+  If pattern_scope=leave_only, omit or set arrive to empty object.
+
+shift_type_tendency  'Reactive' | 'Proactive' | 'Mixed'  (from Step 3)
+
+confidence        'High' | 'Medium' | 'Low'  (from Step 3)
+
+confidence_basis  'N/M shifts: ...' where M = len(supporting_shift_ids),
+  N = count of shifts with non-empty memory_clarity and self_confidence.
+  Exclude shifts where memory_clarity='' or self_confidence=''.
+  Example: '3/5 shifts (2 excluded: no metadata): memory_clarity=Somewhat, self_confidence=High'
+
+supporting_shift_ids  list of shift_ids in this cluster.
+
+evidence          list of ≥2 items. Each item:
+  shift_id:       exactly from valid list above.
+  evidence_snippet: paraphrase of the participant's OWN reasons (Layer 3) — not gaze metrics.
+  tendency:       'leave_push' | 'arrive_pull' | 'both'  (optional).
+
+CANONICAL SCHEMA (MUST match PATTERN_LLM_SYSTEM_INSTRUCTION): Output ONLY the fields above. 
+MUST output: pattern_id, pattern_rule, review_question, plus all schema fields listed above. 
+MUST NOT output: annotation_tendency, trigger_cues — backend derives them from leave/arrive.
+
+FIELD SEMANTICS (quick ref for Step 3):
+- robot_context_cues.*.before_minus5_to_minus1s: action/goal/gripper one-liners + YOLO net.
+- robot_context_cues.*.at_shift_vs_plus_1s: field changes and YOLO deltas at shift→+1s.
+- visual_cues.current_relevance: salient labels, gripper-camera flags, label counts.
+- gaze_cues.context_shifts: up to 2 segments 'REL_T:FROM→TO·DWELL_S' (r1C/r1H/r1G/r2C/r2H/r2G; neg=before).
+- same_robot_cross_view=true: from_robot and to_robot are the same stream; do not double-count.
+
+HARD CONSTRAINTS:
+1. NEVER separate annotation (Layer 3) from context (Layer 1+2). 
+   Every pattern must reflect all three layers together.
+2. Use pattern_scope from evidence: leave_only / arrive_only / both — never default to both 
+   when only one side is substantive; never force a single side empty when that side has real reasons.
+3. leave.user_says and arrive.user_says must be ABSTRACTED phrases, NOT raw quotes.
+   Raw quote format 'robot1 | Category | ...' is FORBIDDEN in user_says.
+4. PREFER full coverage: every valid shift_id in at least one pattern.
+5. If two patterns share >50% of shift_ids, merge them.
+6. evidence_snippet quotes/paraphrases participant reasons — NOT gaze metrics.
+
+Return ONLY valid JSON: {"patterns": [...]}. No markdown fences. No text before or after.
+
+Input JSON:
+<<<PLACEHOLDER FOR: annotated_shift_feature_bundles JSON (this session)>>>
