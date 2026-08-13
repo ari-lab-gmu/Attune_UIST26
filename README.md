@@ -16,7 +16,7 @@
 
 <p align="center">
   <a href="https://ari-lab-gmu.github.io/Attune_UIST26/">🌐 Project Page</a> |
-  <a href="#">📄 Paper (Coming...)</a> |
+  <a href="static/pdfs/paper.pdf">📄 Paper</a> |
   <a href="https://github.com/Puqi7/Attune_SelfAnnotation/tree/main/prompts">💬 Prompts</a>
 </p>
 
