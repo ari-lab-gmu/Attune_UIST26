@@ -340,6 +340,64 @@ body {
   margin-top: 1rem;
 }
 
+.video-tabs {
+  display: inline-flex;
+  gap: 0.5rem;
+  margin: 0 auto 1.25rem;
+  padding: 0.3rem;
+  background: rgba(15, 23, 42, 0.06);
+  border-radius: 999px;
+}
+
+.video-tab {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #64748b);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: var(--transition, 0.2s ease);
+}
+
+.video-tab:hover {
+  color: var(--text-primary, #0f172a);
+}
+
+.video-tab.is-active {
+  background: #0f172a;
+  color: #fff;
+}
+
+.video-carousel {
+  overflow: hidden;
+}
+
+.video-carousel .item {
+  margin: 0;
+  padding: 0 0.25rem;
+}
+
+.video-carousel .video-slide-label {
+  margin-top: 0.85rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+}
+
+.video-carousel .slider-navigation-previous,
+.video-carousel .slider-navigation-next {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border: none;
+  color: #fff;
+}
+
+.video-carousel .slider-navigation-previous svg,
+.video-carousel .slider-navigation-next svg {
+  stroke: #fff;
+}
+
 .publication-body img {
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-md);
