@@ -17,7 +17,8 @@
 <p align="center">
   <a href="https://ari-lab-gmu.github.io/Attune_UIST26/">🌐 Project Page</a> |
   <a href="static/pdfs/paper.pdf">📄 Paper</a> |
-  <a href="https://youtu.be/F_-tDgohSis">▶️ Video</a> |
+  <a href="https://youtu.be/DyaYUWIaAuc">🎬 Preview</a> |
+  <a href="https://youtu.be/ltuI-ig4Mhc">▶️ Video</a> |
   <a href="https://github.com/Puqi7/Attune_SelfAnnotation/tree/main/prompts">💬 Prompts</a>
 </p>
 
