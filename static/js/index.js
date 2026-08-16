@@ -98,18 +98,7 @@ $(document).ready(function() {
 	// Initialize result carousels (if any)
     bulmaCarousel.attach('.results-carousel.carousel', options);
 
-    // Video presentation: Preview first, swipe to Full (no autoplay)
-    var videoCarousels = bulmaCarousel.attach('#video-carousel', {
-        slidesToScroll: 1,
-        slidesToShow: 1,
-        loop: true,
-        infinite: false,
-        autoplay: false,
-        navigation: true,
-        pagination: true,
-    });
-
-    setupVideoPresentationControls(videoCarousels);
+    setupVideoPresentationControls();
     
     bulmaSlider.attach();
     
@@ -130,52 +119,33 @@ function pauseYoutubeIframes(root) {
     });
 }
 
-function setupVideoPresentationControls(videoCarousels) {
-    if (!videoCarousels || videoCarousels.length === 0) return;
-
-    var carousel = videoCarousels[0];
+function setupVideoPresentationControls() {
     var tabs = document.querySelectorAll('.video-tab');
+    var panels = document.querySelectorAll('.video-panel');
+    if (tabs.length === 0 || panels.length === 0) return;
 
-    function setActiveTab(index) {
+    function showVideo(videoId) {
         tabs.forEach(function(tab) {
-            var isActive = Number(tab.dataset.slide) === index;
+            var isActive = tab.dataset.video === videoId;
             tab.classList.toggle('is-active', isActive);
             tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
         });
+
+        panels.forEach(function(panel) {
+            var isActive = panel.id === 'video-' + videoId;
+            panel.classList.toggle('is-active', isActive);
+            if (isActive) {
+                panel.removeAttribute('hidden');
+            } else {
+                panel.setAttribute('hidden', '');
+                pauseYoutubeIframes(panel);
+            }
+        });
     }
-
-    function goToSlide(index) {
-        if (!carousel.state || carousel.state.index === index) {
-            setActiveTab(index);
-            return;
-        }
-        pauseYoutubeIframes(document.getElementById('video-carousel'));
-        // bulma-carousel's show(index) has a typeof bug ('Number' vs 'number');
-        // set next manually, then show().
-        carousel.state.next = index;
-        carousel.show();
-        setActiveTab(index);
-    }
-
-    carousel.on('before:show', function() {
-        pauseYoutubeIframes(document.getElementById('video-carousel'));
-    });
-
-    carousel.on('after:show', function(state) {
-        var index = 0;
-        if (state && typeof state.next === 'number') {
-            index = state.next;
-        } else if (state && typeof state.index === 'number') {
-            index = state.index;
-        }
-        var length = (state && state.length) || 2;
-        index = ((index % length) + length) % length;
-        setActiveTab(index);
-    });
 
     tabs.forEach(function(tab) {
         tab.addEventListener('click', function() {
-            goToSlide(Number(tab.dataset.slide));
+            showVideo(tab.dataset.video);
         });
     });
 }

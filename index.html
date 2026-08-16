@@ -270,52 +270,46 @@
 <!-- Video presentation -->
 <section class="hero is-small is-light">
   <div class="hero-body">
-    <div class="container">
-      <h2 class="title is-3">Video Presentation</h2>
-      <div class="columns is-centered has-text-centered">
-        <div class="column is-four-fifths">
-          <div class="video-tabs" role="tablist" aria-label="Video versions">
-            <button type="button" class="video-tab is-active" data-slide="0" role="tab" aria-selected="true">Preview</button>
-            <button type="button" class="video-tab" data-slide="1" role="tab" aria-selected="false">Full Video</button>
-          </div>
-
-          <div id="video-carousel" class="carousel video-carousel">
-            <div class="item">
-              <div class="publication-video">
-                <iframe
-                  src="https://www.youtube.com/embed/DyaYUWIaAuc?enablejsapi=1"
-                  frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Attune Preview">
-                </iframe>
-              </div>
-              <p class="video-slide-label">Preview</p>
-            </div>
-            <div class="item">
-              <div class="publication-video">
-                <iframe
-                  src="https://www.youtube.com/embed/ltuI-ig4Mhc?enablejsapi=1"
-                  frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Attune Full Video">
-                </iframe>
-              </div>
-              <p class="video-slide-label">Full Video</p>
-            </div>
-          </div>
-
-          <p class="teaser-description video-presentation-caption">
-            Swipe or use the arrows to switch between preview and full video.
-            Also on YouTube:
-            <a href="https://youtu.be/DyaYUWIaAuc" target="_blank" rel="noreferrer">Preview</a>
-            ·
-            <a href="https://youtu.be/ltuI-ig4Mhc" target="_blank" rel="noreferrer">Full</a>.
-          </p>
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Video Presentation</h2>
+      <div class="video-presentation">
+        <div class="video-tabs" role="tablist" aria-label="Video versions">
+          <button type="button" class="video-tab is-active" data-video="preview" role="tab" aria-selected="true" aria-controls="video-preview">Preview</button>
+          <button type="button" class="video-tab" data-video="full" role="tab" aria-selected="false" aria-controls="video-full">Full Video</button>
         </div>
+
+        <div class="video-stage">
+          <div id="video-preview" class="video-panel is-active" role="tabpanel">
+            <div class="publication-video">
+              <iframe
+                src="https://www.youtube.com/embed/DyaYUWIaAuc?enablejsapi=1"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                title="Attune Preview">
+              </iframe>
+            </div>
+          </div>
+          <div id="video-full" class="video-panel" role="tabpanel" hidden>
+            <div class="publication-video">
+              <iframe
+                src="https://www.youtube.com/embed/ltuI-ig4Mhc?enablejsapi=1"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                loading="lazy"
+                title="Attune Full Video">
+              </iframe>
+            </div>
+          </div>
+        </div>
+
+        <p class="video-presentation-caption">
+          Also on YouTube:
+          <a href="https://youtu.be/DyaYUWIaAuc" target="_blank" rel="noreferrer">Preview</a>
+          ·
+          <a href="https://youtu.be/ltuI-ig4Mhc" target="_blank" rel="noreferrer">Full</a>
+        </p>
       </div>
     </div>
   </div>
